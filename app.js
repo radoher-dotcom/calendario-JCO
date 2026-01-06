@@ -1,4 +1,4 @@
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyAps7t_AkEpd9hFBihJ-Kw5MlHcjN4DOFc",
   authDomain: "calendario-jco.firebaseapp.com",
   databaseURL: "https://calendario-jco-default-rtdb.firebaseio.com",
