@@ -8,11 +8,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-database-compat.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Monoton&display=swap" rel="stylesheet">
     <style>
-        .calendar-day { min-height: 100px; }
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            font-family: 'Bebas Neue', sans-serif;
+        }
+        .calendar-day { 
+            min-height: 100px; 
+        }
+        .glow-gold {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        .glow-gold-strong {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        .border-glow {
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1);
+        }
+        .bg-dark {
+            background: rgba(10, 10, 10, 0.95);
+        }
+        .bg-dark-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+        }
+        .text-gold {
+            color: #FFD700;
+        }
+        .btn-gold {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(145deg, #FFA500, #FFD700);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .retro-title {
+            font-family: 'Monoton', cursive;
+            letter-spacing: 0.1em;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body>
     <div id="app"></div>
     <script src="app.js"></script>
 </body>
