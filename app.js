@@ -15,6 +15,7 @@ var currentUser = null;
 var currentDate = new Date();
 var events = {};
 var students = {};
+var allUsers = {};
 var attendance = {};
 var participation = {};
 
@@ -34,8 +35,12 @@ auth.onAuthStateChanged(function(user) {
 function loadData() {
     db.ref('events').on('value', function(s) { events = s.val() || {}; if (currentUser) showCalendar(); });
     db.ref('users').on('value', function(s) {
-        var users = s.val() || {}; students = {};
-        for (var uid in users) if (users[uid].role === 'student') students[uid] = {id: uid, name: users[uid].name};
+        var users = s.val() || {};
+        students = {};
+        allUsers = users;
+        for (var uid in users) {
+            if (users[uid].role === 'student') students[uid] = {id: uid, name: users[uid].name, email: users[uid].email};
+        }
         if (currentUser) showCalendar();
     });
     db.ref('attendance').on('value', function(s) { attendance = s.val() || {}; if (currentUser) showCalendar(); });
@@ -43,7 +48,7 @@ function loadData() {
 }
 
 function showLoginScreen() {
-    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><h1 class="text-3xl font-bold text-gray-800 mb-2">Sistema de Calendario</h1><p class="text-gray-600">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-200 text-gray-700">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><button onclick="login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">Entrar</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><select id="registerRole" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><option value="">Selecciona tu rol</option><option value="admin">Administrador/Profesor</option><option value="student">Alumno</option></select><button onclick="register()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">Crear Cuenta</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
+    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><h1 class="text-3xl font-bold text-gray-800 mb-2">Sistema de Calendario</h1><p class="text-gray-600">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-200 text-gray-700">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><button onclick="login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">Entrar</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><button onclick="register()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">Crear Cuenta</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
 }
 
 function showTab(tab) {
@@ -72,11 +77,10 @@ function register() {
     var name = document.getElementById('registerName').value;
     var email = document.getElementById('registerEmail').value;
     var password = document.getElementById('registerPassword').value;
-    var role = document.getElementById('registerRole').value;
-    if (!name || !email || !password || !role) { showMessage('Completa todos los campos', 'error'); return; }
+    if (!name || !email || !password) { showMessage('Completa todos los campos', 'error'); return; }
     auth.createUserWithEmailAndPassword(email, password).then(function(u) {
-        return db.ref('users/' + u.user.uid).set({name: name, email: email, role: role, createdAt: Date.now()});
-    }).then(function() { showMessage('Cuenta creada', 'success'); }).catch(function(e) { showMessage('Error: ' + e.message, 'error'); });
+        return db.ref('users/' + u.user.uid).set({name: name, email: email, role: 'student', createdAt: Date.now()});
+    }).then(function() { showMessage('Cuenta creada como Alumno', 'success'); }).catch(function(e) { showMessage('Error: ' + e.message, 'error'); });
 }
 
 function showMessage(msg, type) {
@@ -131,13 +135,81 @@ function showCalendar() {
         var stats = getStudentStats(uid);
         stuHTML += '<div class="p-3 bg-gray-50 rounded-lg"><div class="font-semibold text-gray-800">' + students[uid].name + '</div><div class="text-xs text-gray-600 mt-1 flex gap-3"><span>✓ ' + stats.attendance + '</span><span>⭐ ' + stats.participation + '</span></div></div>';
     }
-    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-white rounded-xl shadow-lg p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div><h1 class="text-3xl font-bold text-gray-800">Calendario de Actividades</h1><p class="text-gray-600 mt-1"><span class="font-semibold">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700') + ' px-3 py-1 rounded-full">' + (isAdmin ? 'Administrador' : 'Alumno') + '</span></p></div><button onclick="logout()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Salir</button></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2"><div class="bg-white rounded-xl shadow-lg p-6"><div class="flex justify-between items-center mb-6"><button onclick="changeMonth(-1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">←</button><h2 class="text-2xl font-bold text-gray-800">' + monthNames[month] + ' ' + year + '</h2><button onclick="changeMonth(1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">→</button></div><div class="grid grid-cols-7 gap-2 mb-2">';
+    
+    var userManagementHTML = '';
+    if (isAdmin) {
+        var adminCount = 0, studentCount = 0;
+        for (var uid in allUsers) {
+            if (allUsers[uid].role === 'admin') adminCount++;
+            else studentCount++;
+        }
+        userManagementHTML = '<div class="bg-white rounded-xl shadow-lg p-6 mb-6"><h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>Gestión de Usuarios</h3><div class="grid grid-cols-2 gap-4 mb-4"><div class="bg-indigo-50 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-indigo-600">' + adminCount + '</div><div class="text-sm text-gray-600">Administradores</div></div><div class="bg-green-50 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-green-600">' + studentCount + '</div><div class="text-sm text-gray-600">Alumnos</div></div></div><button onclick="showUserManagementModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition">Ver Todos los Usuarios</button></div>';
+    }
+    
+    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-white rounded-xl shadow-lg p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div><h1 class="text-3xl font-bold text-gray-800">Calendario de Actividades</h1><p class="text-gray-600 mt-1"><span class="font-semibold">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700') + ' px-3 py-1 rounded-full">' + (isAdmin ? 'Administrador' : 'Alumno') + '</span></p></div><button onclick="logout()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Salir</button></div></div>';
+    
+    if (isAdmin) html += userManagementHTML;
+    
+    html += '<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2"><div class="bg-white rounded-xl shadow-lg p-6"><div class="flex justify-between items-center mb-6"><button onclick="changeMonth(-1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">←</button><h2 class="text-2xl font-bold text-gray-800">' + monthNames[month] + ' ' + year + '</h2><button onclick="changeMonth(1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">→</button></div><div class="grid grid-cols-7 gap-2 mb-2">';
     for (var i = 0; i < 7; i++) html += '<div class="text-center font-semibold text-gray-600 py-2">' + dayNames[i] + '</div>';
     html += '</div><div class="grid grid-cols-7 gap-2">' + cal + '</div></div></div><div class="space-y-6"><div id="sidePanel" class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Información</h3><p class="text-gray-600">Selecciona un día</p></div>';
     if (isAdmin) html += '<div class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Alumnos (' + stuCnt + ')</h3><div class="space-y-2 max-h-64 overflow-y-auto">' + stuHTML + '</div></div>';
     else html += '<div class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Mis Estadísticas</h3><div>' + getMyStatsHTML() + '</div></div>';
     html += '</div></div></div><div id="modals"></div>';
     document.getElementById('app').innerHTML = html;
+}
+
+function showUserManagementModal() {
+    var html = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Gestión de Usuarios</h3><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-3">';
+    
+    for (var uid in allUsers) {
+        var user = allUsers[uid];
+        var isCurrentUser = uid === currentUser.uid;
+        var roleColor = user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700';
+        var roleText = user.role === 'admin' ? 'Administrador' : 'Alumno';
+        
+        html += '<div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border-2 ' + (isCurrentUser ? 'border-indigo-300' : 'border-gray-200') + '">';
+        html += '<div class="flex-1"><div class="font-semibold text-gray-800">' + user.name + (isCurrentUser ? ' (Tú)' : '') + '</div><div class="text-sm text-gray-600">' + user.email + '</div></div>';
+        html += '<div class="flex items-center gap-2"><span class="text-xs px-3 py-1 rounded-full ' + roleColor + '">' + roleText + '</span>';
+        
+        if (!isCurrentUser) {
+            if (user.role === 'student') {
+                html += '<button onclick="promoteUser(\'' + uid + '\')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded text-sm">Promover a Admin</button>';
+            } else {
+                html += '<button onclick="demoteUser(\'' + uid + '\')" class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm">Degradar a Alumno</button>';
+            }
+            html += '<button onclick="deleteUser(\'' + uid + '\')" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm">Eliminar</button>';
+        }
+        
+        html += '</div></div>';
+    }
+    
+    html += '</div></div></div>';
+    document.getElementById('modals').innerHTML = html;
+}
+
+function promoteUser(uid) {
+    if (confirm('¿Promover este usuario a Administrador?')) {
+        db.ref('users/' + uid + '/role').set('admin').then(function() {
+            alert('Usuario promovido a Administrador');
+        });
+    }
+}
+
+function demoteUser(uid) {
+    if (confirm('¿Degradar este administrador a Alumno?')) {
+        db.ref('users/' + uid + '/role').set('student').then(function() {
+            alert('Usuario degradado a Alumno');
+        });
+    }
+}
+
+function deleteUser(uid) {
+    if (confirm('¿ELIMINAR este usuario permanentemente? Esta acción no se puede deshacer.')) {
+        db.ref('users/' + uid).remove().then(function() {
+            alert('Usuario eliminado');
+        });
+    }
 }
 
 function selectDate(dateStr) {
