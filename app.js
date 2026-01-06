@@ -48,20 +48,20 @@ function loadData() {
 }
 
 function showLoginScreen() {
-    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><h1 class="text-3xl font-bold text-gray-800 mb-2">Sistema de Calendario</h1><p class="text-gray-600">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-200 text-gray-700">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><button onclick="login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">Entrar</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"><button onclick="register()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">Crear Cuenta</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
+    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-dark-card border-glow rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><img src="https://i.ibb.co/xqbB50NB/IMG-20260106-WA0009.jpg" alt="Logo" class="w-32 h-32 mx-auto mb-4 rounded-full glow-gold"><h1 class="text-4xl font-bold text-gold glow-gold-strong retro-title mb-2">CALENDARIO</h1><p class="text-gray-300">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gradient-to-r from-yellow-500 to-yellow-600 text-black">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-700 text-gray-300">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="login()" class="w-full btn-gold py-3 rounded-lg transition">ENTRAR</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="register()" class="w-full btn-gold py-3 rounded-lg transition">CREAR CUENTA</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
 }
 
 function showTab(tab) {
     if (tab === 'login') {
         document.getElementById('loginForm').classList.remove('hidden');
         document.getElementById('registerForm').classList.add('hidden');
-        document.getElementById('loginTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white';
-        document.getElementById('registerTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-200 text-gray-700';
+        document.getElementById('loginTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gradient-to-r from-yellow-500 to-yellow-600 text-black';
+        document.getElementById('registerTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-700 text-gray-300';
     } else {
         document.getElementById('loginForm').classList.add('hidden');
         document.getElementById('registerForm').classList.remove('hidden');
-        document.getElementById('loginTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-200 text-gray-700';
-        document.getElementById('registerTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-indigo-600 text-white';
+        document.getElementById('loginTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-700 text-gray-300';
+        document.getElementById('registerTab').className = 'flex-1 py-2 px-4 rounded-lg font-semibold bg-gradient-to-r from-yellow-500 to-yellow-600 text-black';
     }
 }
 
@@ -85,13 +85,13 @@ function register() {
 
 function showMessage(msg, type) {
     var div = document.getElementById('authMessage');
-    if (div) { div.textContent = msg; div.className = 'mt-4 text-center text-sm ' + (type === 'error' ? 'text-red-600' : 'text-green-600'); }
+    if (div) { div.textContent = msg; div.className = 'mt-4 text-center text-sm ' + (type === 'error' ? 'text-red-400' : 'text-green-400'); }
 }
 
 function logout() { auth.signOut(); }
 
 function getEventColor(type) {
-    return {clase:'bg-blue-200 text-blue-800', reunion:'bg-purple-200 text-purple-800', examen:'bg-green-200 text-green-800', evento:'bg-yellow-200 text-yellow-800'}[type] || 'bg-gray-200 text-gray-800';
+    return {clase:'bg-blue-900 text-blue-300 border border-blue-500', reunion:'bg-purple-900 text-purple-300 border border-purple-500', examen:'bg-green-900 text-green-300 border border-green-500', evento:'bg-yellow-900 text-yellow-300 border border-yellow-500'}[type] || 'bg-gray-800 text-gray-300';
 }
 
 function getBorderColor(type) {
@@ -124,7 +124,7 @@ function showCalendar() {
         var dayEvs = [];
         for (var id in events) if (events[id].date === dateStr) dayEvs.push(events[id]);
         var isToday = dateStr === formatDate(new Date());
-        cal += '<div class="calendar-day border-2 ' + (isToday ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200') + ' rounded-lg p-2 cursor-pointer hover:border-indigo-300" onclick="selectDate(\'' + dateStr + '\')"><div class="font-semibold text-gray-700 mb-1">' + day + '</div><div class="space-y-1">';
+        cal += '<div class="calendar-day border-2 ' + (isToday ? 'border-yellow-500 bg-yellow-900 bg-opacity-20 glow-gold' : 'border-gray-700 bg-gray-900') + ' rounded-lg p-2 cursor-pointer hover:border-yellow-600 transition" onclick="selectDate(\'' + dateStr + '\')"><div class="font-semibold text-white mb-1">' + day + '</div><div class="space-y-1">';
         for (var j = 0; j < dayEvs.length; j++) cal += '<div class="text-xs px-2 py-1 rounded truncate ' + getEventColor(dayEvs[j].type) + '">' + dayEvs[j].title + '</div>';
         cal += '</div></div>';
     }
@@ -133,7 +133,7 @@ function showCalendar() {
     for (var uid in students) {
         stuCnt++;
         var stats = getStudentStats(uid);
-        stuHTML += '<div class="p-3 bg-gray-50 rounded-lg"><div class="font-semibold text-gray-800">' + students[uid].name + '</div><div class="text-xs text-gray-600 mt-1 flex gap-3"><span>✓ ' + stats.attendance + '</span><span>⭐ ' + stats.participation + '</span></div></div>';
+        stuHTML += '<div class="p-3 bg-gray-900 border border-gray-700 rounded-lg hover:border-yellow-600 transition"><div class="font-semibold text-white">' + students[uid].name + '</div><div class="text-xs text-gray-400 mt-1 flex gap-3"><span>✓ ' + stats.attendance + '</span><span>⭐ ' + stats.participation + '</span></div></div>';
     }
     
     var userManagementHTML = '';
@@ -143,42 +143,42 @@ function showCalendar() {
             if (allUsers[uid].role === 'admin') adminCount++;
             else studentCount++;
         }
-        userManagementHTML = '<div class="bg-white rounded-xl shadow-lg p-6 mb-6"><h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>Gestión de Usuarios</h3><div class="grid grid-cols-2 gap-4 mb-4"><div class="bg-indigo-50 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-indigo-600">' + adminCount + '</div><div class="text-sm text-gray-600">Administradores</div></div><div class="bg-green-50 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-green-600">' + studentCount + '</div><div class="text-sm text-gray-600">Alumnos</div></div></div><button onclick="showUserManagementModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition">Ver Todos los Usuarios</button></div>';
+        userManagementHTML = '<div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6 mb-6"><h3 class="text-2xl font-bold text-gold glow-gold-strong mb-4 flex items-center gap-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>GESTIÓN DE USUARIOS</h3><div class="grid grid-cols-2 gap-4 mb-4"><div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 p-4 rounded-lg text-center glow-gold"><div class="text-3xl font-bold text-gold">' + adminCount + '</div><div class="text-sm text-gray-300">Administradores</div></div><div class="bg-green-900 bg-opacity-30 border border-green-600 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-green-400">' + studentCount + '</div><div class="text-sm text-gray-300">Alumnos</div></div></div><button onclick="showUserManagementModal()" class="w-full btn-gold py-3 rounded-lg transition">VER TODOS LOS USUARIOS</button></div>';
     }
     
-    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-white rounded-xl shadow-lg p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div><h1 class="text-3xl font-bold text-gray-800">Calendario de Actividades</h1><p class="text-gray-600 mt-1"><span class="font-semibold">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700') + ' px-3 py-1 rounded-full">' + (isAdmin ? 'Administrador' : 'Alumno') + '</span></p></div><button onclick="logout()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Salir</button></div></div>';
+    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div class="flex items-center gap-4"><img src="https://i.ibb.co/xqbB50NB/IMG-20260106-WA0009.jpg" alt="Logo" class="w-16 h-16 rounded-full glow-gold"><div><h1 class="text-3xl font-bold text-gold glow-gold-strong retro-title">CALENDARIO</h1><p class="text-gray-300 mt-1"><span class="font-semibold text-white">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-yellow-600 text-black' : 'bg-green-600 text-black') + ' px-3 py-1 rounded-full font-bold">' + (isAdmin ? 'ADMIN' : 'ALUMNO') + '</span></p></div></div><button onclick="logout()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg transition">Salir</button></div></div>';
     
     if (isAdmin) html += userManagementHTML;
     
-    html += '<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2"><div class="bg-white rounded-xl shadow-lg p-6"><div class="flex justify-between items-center mb-6"><button onclick="changeMonth(-1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">←</button><h2 class="text-2xl font-bold text-gray-800">' + monthNames[month] + ' ' + year + '</h2><button onclick="changeMonth(1)" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg font-semibold">→</button></div><div class="grid grid-cols-7 gap-2 mb-2">';
-    for (var i = 0; i < 7; i++) html += '<div class="text-center font-semibold text-gray-600 py-2">' + dayNames[i] + '</div>';
-    html += '</div><div class="grid grid-cols-7 gap-2">' + cal + '</div></div></div><div class="space-y-6"><div id="sidePanel" class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Información</h3><p class="text-gray-600">Selecciona un día</p></div>';
-    if (isAdmin) html += '<div class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Alumnos (' + stuCnt + ')</h3><div class="space-y-2 max-h-64 overflow-y-auto">' + stuHTML + '</div></div>';
-    else html += '<div class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Mis Estadísticas</h3><div>' + getMyStatsHTML() + '</div></div>';
+    html += '<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2"><div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6"><div class="flex justify-between items-center mb-6"><button onclick="changeMonth(-1)" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg font-bold transition">←</button><h2 class="text-3xl font-bold text-gold glow-gold-strong">' + monthNames[month] + ' ' + year + '</h2><button onclick="changeMonth(1)" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg font-bold transition">→</button></div><div class="grid grid-cols-7 gap-2 mb-2">';
+    for (var i = 0; i < 7; i++) html += '<div class="text-center font-bold text-gold py-2">' + dayNames[i] + '</div>';
+    html += '</div><div class="grid grid-cols-7 gap-2">' + cal + '</div></div></div><div class="space-y-6"><div id="sidePanel" class="bg-dark-card border-glow rounded-xl shadow-2xl p-6"><h3 class="text-xl font-bold text-gold glow-gold-strong mb-4">INFORMACIÓN</h3><p class="text-gray-400">Selecciona un día</p></div>';
+    if (isAdmin) html += '<div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6"><h3 class="text-xl font-bold text-gold glow-gold-strong mb-4">ALUMNOS (' + stuCnt + ')</h3><div class="space-y-2 max-h-64 overflow-y-auto">' + stuHTML + '</div></div>';
+    else html += '<div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6"><h3 class="text-xl font-bold text-gold glow-gold-strong mb-4">MIS ESTADÍSTICAS</h3><div>' + getMyStatsHTML() + '</div></div>';
     html += '</div></div></div><div id="modals"></div>';
     document.getElementById('app').innerHTML = html;
 }
 
 function showUserManagementModal() {
-    var html = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Gestión de Usuarios</h3><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-3">';
+    var html = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-2xl w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-gold glow-gold-strong">GESTIÓN DE USUARIOS</h3><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-3">';
     
     for (var uid in allUsers) {
         var user = allUsers[uid];
         var isCurrentUser = uid === currentUser.uid;
-        var roleColor = user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700';
-        var roleText = user.role === 'admin' ? 'Administrador' : 'Alumno';
+        var roleColor = user.role === 'admin' ? 'bg-yellow-600 text-black' : 'bg-green-600 text-black';
+        var roleText = user.role === 'admin' ? 'ADMIN' : 'ALUMNO';
         
-        html += '<div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border-2 ' + (isCurrentUser ? 'border-indigo-300' : 'border-gray-200') + '">';
-        html += '<div class="flex-1"><div class="font-semibold text-gray-800">' + user.name + (isCurrentUser ? ' (Tú)' : '') + '</div><div class="text-sm text-gray-600">' + user.email + '</div></div>';
-        html += '<div class="flex items-center gap-2"><span class="text-xs px-3 py-1 rounded-full ' + roleColor + '">' + roleText + '</span>';
+        html += '<div class="flex justify-between items-center p-4 bg-gray-900 rounded-lg border-2 ' + (isCurrentUser ? 'border-yellow-500 glow-gold' : 'border-gray-700') + '">';
+        html += '<div class="flex-1"><div class="font-semibold text-white">' + user.name + (isCurrentUser ? ' (Tú)' : '') + '</div><div class="text-sm text-gray-400">' + user.email + '</div></div>';
+        html += '<div class="flex items-center gap-2"><span class="text-xs px-3 py-1 rounded-full font-bold ' + roleColor + '">' + roleText + '</span>';
         
         if (!isCurrentUser) {
             if (user.role === 'student') {
-                html += '<button onclick="promoteUser(\'' + uid + '\')" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded text-sm">Promover a Admin</button>';
+                html += '<button onclick="promoteUser(\'' + uid + '\')" class="px-3 py-1 bg-yellow-600 hover:bg-yellow-500 text-black rounded text-sm font-bold">↑ Admin</button>';
             } else {
-                html += '<button onclick="demoteUser(\'' + uid + '\')" class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm">Degradar a Alumno</button>';
+                html += '<button onclick="demoteUser(\'' + uid + '\')" class="px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded text-sm font-bold">↓ Alumno</button>';
             }
-            html += '<button onclick="deleteUser(\'' + uid + '\')" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm">Eliminar</button>';
+            html += '<button onclick="deleteUser(\'' + uid + '\')" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-sm font-bold">✕</button>';
         }
         
         html += '</div></div>';
@@ -205,7 +205,7 @@ function demoteUser(uid) {
 }
 
 function deleteUser(uid) {
-    if (confirm('¿ELIMINAR este usuario permanentemente? Esta acción no se puede deshacer.')) {
+    if (confirm('¿ELIMINAR este usuario permanentemente?')) {
         db.ref('users/' + uid).remove().then(function() {
             alert('Usuario eliminado');
         });
@@ -216,26 +216,26 @@ function selectDate(dateStr) {
     var dayEvs = [];
     for (var id in events) if (events[id].date === dateStr) dayEvs.push(events[id]);
     var isAdmin = currentUser.role === 'admin';
-    var html = '<h3 class="text-xl font-bold text-gray-800 mb-4">' + formatDateReadable(dateStr) + '</h3>';
-    if (dayEvs.length === 0) html += '<p class="text-gray-600 mb-4">No hay eventos</p>';
+    var html = '<h3 class="text-xl font-bold text-gold glow-gold-strong mb-4">' + formatDateReadable(dateStr) + '</h3>';
+    if (dayEvs.length === 0) html += '<p class="text-gray-400 mb-4">No hay eventos</p>';
     else {
         for (var i = 0; i < dayEvs.length; i++) {
             var ev = dayEvs[i];
-            html += '<div class="mb-4 p-4 bg-gray-50 rounded-lg border-l-4 ' + getBorderColor(ev.type) + '"><div class="flex justify-between items-start mb-2"><h4 class="font-bold text-gray-800 text-lg">' + ev.title + '</h4>';
-            if (isAdmin) html += '<button onclick="deleteEvent(\'' + ev.id + '\')" class="text-red-500 hover:text-red-700">🗑️</button>';
-            html += '</div><p class="text-sm text-gray-600 mb-1">⏰ ' + (ev.time || 'Sin hora') + '</p>';
-            if (ev.cost) html += '<p class="text-sm text-gray-600 mb-1">💰 $' + ev.cost + '</p>';
-            if (ev.description) html += '<p class="text-sm text-gray-600 mt-2">' + ev.description + '</p>';
-            if (isAdmin) html += '<button onclick="showAttendanceModal(\'' + ev.id + '\')" class="mt-3 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">📋 Pasar Lista</button>';
+            html += '<div class="mb-4 p-4 bg-gray-900 rounded-lg border-l-4 ' + getBorderColor(ev.type) + '"><div class="flex justify-between items-start mb-2"><h4 class="font-bold text-white text-lg">' + ev.title + '</h4>';
+            if (isAdmin) html += '<button onclick="deleteEvent(\'' + ev.id + '\')" class="text-red-500 hover:text-red-400">🗑️</button>';
+            html += '</div><p class="text-sm text-gray-400 mb-1">⏰ ' + (ev.time || 'Sin hora') + '</p>';
+            if (ev.cost) html += '<p class="text-sm text-gray-400 mb-1">💰 $' + ev.cost + '</p>';
+            if (ev.description) html += '<p class="text-sm text-gray-300 mt-2">' + ev.description + '</p>';
+            if (isAdmin) html += '<button onclick="showAttendanceModal(\'' + ev.id + '\')" class="mt-3 btn-gold px-4 py-2 rounded-lg text-sm">📋 PASAR LISTA</button>';
             html += '</div>';
         }
     }
-    if (isAdmin) html += '<button onclick="showAddEventModal(\'' + dateStr + '\')" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold">➕ Agregar Evento</button>';
+    if (isAdmin) html += '<button onclick="showAddEventModal(\'' + dateStr + '\')" class="w-full mt-4 btn-gold py-3 rounded-lg font-bold">➕ AGREGAR EVENTO</button>';
     document.getElementById('sidePanel').innerHTML = html;
 }
 
 function showAddEventModal(dateStr) {
-    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Agregar Evento</h3><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 border rounded-lg"><select id="eventType" class="w-full px-4 py-2 border rounded-lg"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option></select><input type="time" id="eventTime" class="w-full px-4 py-2 border rounded-lg"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 border rounded-lg"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 border rounded-lg"></textarea><button onclick="addEvent(\'' + dateStr + '\')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold">Guardar</button></div></div></div>';
+    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gold glow-gold-strong">AGREGAR EVENTO</h3><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><select id="eventType" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option></select><input type="time" id="eventTime" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"></textarea><button onclick="addEvent(\'' + dateStr + '\')" class="w-full btn-gold py-2 rounded-lg font-bold">GUARDAR</button></div></div></div>';
 }
 
 function addEvent(dateStr) {
@@ -251,12 +251,12 @@ function deleteEvent(eventId) { if (confirm('¿Eliminar?')) db.ref('events/' + e
 
 function showAttendanceModal(eventId) {
     var ev = events[eventId];
-    var html = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-md w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><div><h3 class="text-xl font-bold">Pasar Lista</h3><p class="text-sm text-gray-600">' + ev.title + '</p></div><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-2">';
+    var html = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><div><h3 class="text-xl font-bold text-gold glow-gold-strong">PASAR LISTA</h3><p class="text-sm text-gray-400">' + ev.title + '</p></div><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-2">';
     for (var uid in students) {
         var stu = students[uid];
         var attKey = eventId + '-' + uid;
         var isPresent = attendance[attKey] || false;
-        html += '<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span class="font-medium">' + stu.name + '</span><div class="flex gap-2"><button onclick="toggleAttendance(\'' + eventId + '\',\'' + uid + '\')" class="px-4 py-1 rounded ' + (isPresent ? 'bg-green-500 text-white' : 'bg-gray-300') + '">' + (isPresent ? '✓ Presente' : 'Ausente') + '</button><button onclick="addParticipation(\'' + uid + '\')" class="px-3 py-1 bg-yellow-500 text-white rounded">+1 ⭐</button></div></div>';
+        html += '<div class="flex justify-between items-center p-3 bg-gray-900 border border-gray-700 rounded-lg"><span class="font-medium text-white">' + stu.name + '</span><div class="flex gap-2"><button onclick="toggleAttendance(\'' + eventId + '\',\'' + uid + '\')" class="px-4 py-1 rounded font-bold ' + (isPresent ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400') + '">' + (isPresent ? '✓ Presente' : 'Ausente') + '</button><button onclick="addParticipation(\'' + uid + '\')" class="px-3 py-1 bg-yellow-600 text-black rounded font-bold">+1 ⭐</button></div></div>';
     }
     html += '</div></div></div>';
     document.getElementById('modals').innerHTML = html;
@@ -281,7 +281,7 @@ function getStudentStats(studentId) {
 
 function getMyStatsHTML() {
     var stats = getStudentStats(currentUser.uid);
-    return '<div class="space-y-3"><div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg"><span>✓ Asistencias</span><span class="font-bold text-blue-600">' + stats.attendance + '</span></div><div class="flex items-center justify-between p-3 bg-green-50 rounded-lg"><span>⭐ Participaciones</span><span class="font-bold text-green-600">' + stats.participation + '</span></div></div>';
+    return '<div class="space-y-3"><div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg"><span class="text-gray-300">✓ Asistencias</span><span class="font-bold text-blue-400 text-2xl">' + stats.attendance + '</span></div><div class="flex items-center justify-between p-3 bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg glow-gold"><span class="text-gray-300">⭐ Participaciones</span><span class="font-bold text-gold text-2xl">' + stats.participation + '</span></div></div>';
 }
 
 function closeModal(event) { if (!event || event.target === event.currentTarget) document.getElementById('modals').innerHTML = ''; }
