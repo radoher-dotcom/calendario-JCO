@@ -1,5 +1,5 @@
 var firebaseConfig = {
-  apiKey: "AIzaSyAps7t_AkEpd9hFBihJ-Kw5MlHcjN4DOFc",
+   apiKey: "AIzaSyAps7t_AkEpd9hFBihJ-Kw5MlHcjN4DOFc",
   authDomain: "calendario-jco.firebaseapp.com",
   databaseURL: "https://calendario-jco-default-rtdb.firebaseio.com",
   projectId: "calendario-jco",
@@ -11,7 +11,6 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
 var db = firebase.database();
-
 var currentUser = null;
 var currentDate = new Date();
 var events = {};
@@ -23,12 +22,7 @@ auth.onAuthStateChanged(function(user) {
     if (user) {
         db.ref('users/' + user.uid).once('value').then(function(snapshot) {
             var data = snapshot.val();
-            currentUser = { 
-                uid: user.uid,
-                name: data.name,
-                email: data.email,
-                role: data.role
-            };
+            currentUser = {uid: user.uid, name: data.name, email: data.email, role: data.role};
             loadData();
         });
     } else {
@@ -38,28 +32,14 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function loadData() {
-    db.ref('events').on('value', function(snapshot) {
-        events = snapshot.val() || {};
+    db.ref('events').on('value', function(s) { events = s.val() || {}; if (currentUser) showCalendar(); });
+    db.ref('users').on('value', function(s) {
+        var users = s.val() || {}; students = {};
+        for (var uid in users) if (users[uid].role === 'student') students[uid] = {id: uid, name: users[uid].name};
         if (currentUser) showCalendar();
     });
-    db.ref('users').on('value', function(snapshot) {
-        var users = snapshot.val() || {};
-        students = {};
-        for (var uid in users) {
-            if (users[uid].role === 'student') {
-                students[uid] = { id: uid, name: users[uid].name };
-            }
-        }
-        if (currentUser) showCalendar();
-    });
-    db.ref('attendance').on('value', function(snapshot) {
-        attendance = snapshot.val() || {};
-        if (currentUser) showCalendar();
-    });
-    db.ref('participation').on('value', function(snapshot) {
-        participation = snapshot.val() || {};
-        if (currentUser) showCalendar();
-    });
+    db.ref('attendance').on('value', function(s) { attendance = s.val() || {}; if (currentUser) showCalendar(); });
+    db.ref('participation').on('value', function(s) { participation = s.val() || {}; if (currentUser) showCalendar(); });
 }
 
 function showLoginScreen() {
@@ -93,46 +73,28 @@ function register() {
     var email = document.getElementById('registerEmail').value;
     var password = document.getElementById('registerPassword').value;
     var role = document.getElementById('registerRole').value;
-    if (!name || !email || !password || !role) {
-        showMessage('Por favor completa todos los campos', 'error');
-        return;
-    }
-    auth.createUserWithEmailAndPassword(email, password).then(function(userCredential) {
-        return db.ref('users/' + userCredential.user.uid).set({
-            name: name,
-            email: email,
-            role: role,
-            createdAt: Date.now()
-        });
-    }).then(function() {
-        showMessage('Cuenta creada exitosamente', 'success');
-    }).catch(function(error) {
-        showMessage('Error: ' + error.message, 'error');
-    });
+    if (!name || !email || !password || !role) { showMessage('Completa todos los campos', 'error'); return; }
+    auth.createUserWithEmailAndPassword(email, password).then(function(u) {
+        return db.ref('users/' + u.user.uid).set({name: name, email: email, role: role, createdAt: Date.now()});
+    }).then(function() { showMessage('Cuenta creada', 'success'); }).catch(function(e) { showMessage('Error: ' + e.message, 'error'); });
 }
 
-function showMessage(message, type) {
-    var msgDiv = document.getElementById('authMessage');
-    if (msgDiv) {
-        msgDiv.textContent = message;
-        msgDiv.className = 'mt-4 text-center text-sm ' + (type === 'error' ? 'text-red-600' : 'text-green-600');
-    }
+function showMessage(msg, type) {
+    var div = document.getElementById('authMessage');
+    if (div) { div.textContent = msg; div.className = 'mt-4 text-center text-sm ' + (type === 'error' ? 'text-red-600' : 'text-green-600'); }
 }
 
 function logout() { auth.signOut(); }
 
 function getEventColor(type) {
-    return {'clase':'bg-blue-200 text-blue-800','reunion':'bg-purple-200 text-purple-800','examen':'bg-green-200 text-green-800','evento':'bg-yellow-200 text-yellow-800'}[type] || 'bg-gray-200 text-gray-800';
+    return {clase:'bg-blue-200 text-blue-800', reunion:'bg-purple-200 text-purple-800', examen:'bg-green-200 text-green-800', evento:'bg-yellow-200 text-yellow-800'}[type] || 'bg-gray-200 text-gray-800';
 }
 
 function getBorderColor(type) {
-    return {'clase':'border-blue-500','reunion':'border-purple-500','examen':'border-green-500','evento':'border-yellow-500'}[type] || 'border-gray-500';
+    return {clase:'border-blue-500', reunion:'border-purple-500', examen:'border-green-500', evento:'border-yellow-500'}[type] || 'border-gray-500';
 }
 
-function changeMonth(delta) {
-    currentDate.setMonth(currentDate.getMonth() + delta);
-    showCalendar();
-}
+function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); showCalendar(); }
 
 function formatDate(date) {
     return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
@@ -143,6 +105,7 @@ function formatDateReadable(dateStr) {
     var parts = dateStr.split('-');
     return parts[2] + ' de ' + months[parseInt(parts[1]) - 1] + ' de ' + parts[0];
 }
+
 function showCalendar() {
     var monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     var dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -200,4 +163,55 @@ function selectDate(dateStr) {
 }
 
 function showAddEventModal(dateStr) {
-    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Agregar Evento</h3><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 border rounded-lg"><select id="eventType" class="w-full px-4 py-2 border rounded-lg"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option></select><input type="time" id="eventTime" class="w-full px-4 py-2 border rounded-lg"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 border rounded-lg"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 border rounded-lg">
+    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Agregar Evento</h3><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 border rounded-lg"><select id="eventType" class="w-full px-4 py-2 border rounded-lg"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option></select><input type="time" id="eventTime" class="w-full px-4 py-2 border rounded-lg"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 border rounded-lg"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 border rounded-lg"></textarea><button onclick="addEvent(\'' + dateStr + '\')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold">Guardar</button></div></div></div>';
+}
+
+function addEvent(dateStr) {
+    var title = document.getElementById('eventTitle').value;
+    if (!title) { alert('Ingresa un título'); return; }
+    var eventId = Date.now().toString();
+    db.ref('events/' + eventId).set({id: eventId, title: title, type: document.getElementById('eventType').value, time: document.getElementById('eventTime').value, cost: document.getElementById('eventCost').value, description: document.getElementById('eventDescription').value, date: dateStr, createdBy: currentUser.uid, createdAt: Date.now()});
+    closeModal();
+    selectDate(dateStr);
+}
+
+function deleteEvent(eventId) { if (confirm('¿Eliminar?')) db.ref('events/' + eventId).remove(); }
+
+function showAttendanceModal(eventId) {
+    var ev = events[eventId];
+    var html = '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-white rounded-xl p-6 max-w-md w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><div><h3 class="text-xl font-bold">Pasar Lista</h3><p class="text-sm text-gray-600">' + ev.title + '</p></div><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button></div><div class="space-y-2">';
+    for (var uid in students) {
+        var stu = students[uid];
+        var attKey = eventId + '-' + uid;
+        var isPresent = attendance[attKey] || false;
+        html += '<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span class="font-medium">' + stu.name + '</span><div class="flex gap-2"><button onclick="toggleAttendance(\'' + eventId + '\',\'' + uid + '\')" class="px-4 py-1 rounded ' + (isPresent ? 'bg-green-500 text-white' : 'bg-gray-300') + '">' + (isPresent ? '✓ Presente' : 'Ausente') + '</button><button onclick="addParticipation(\'' + uid + '\')" class="px-3 py-1 bg-yellow-500 text-white rounded">+1 ⭐</button></div></div>';
+    }
+    html += '</div></div></div>';
+    document.getElementById('modals').innerHTML = html;
+}
+
+function toggleAttendance(eventId, studentId) {
+    var key = eventId + '-' + studentId;
+    db.ref('attendance/' + key).set(!(attendance[key] || false));
+}
+
+function addParticipation(studentId) {
+    var pid = Date.now().toString();
+    db.ref('participation/' + pid).set({studentId: studentId, points: 1, date: formatDate(new Date()), timestamp: Date.now()});
+}
+
+function getStudentStats(studentId) {
+    var attCnt = 0, partPts = 0;
+    for (var key in attendance) if (key.indexOf(studentId) !== -1 && attendance[key]) attCnt++;
+    for (var id in participation) if (participation[id].studentId === studentId) partPts += participation[id].points || 0;
+    return {attendance: attCnt, participation: partPts};
+}
+
+function getMyStatsHTML() {
+    var stats = getStudentStats(currentUser.uid);
+    return '<div class="space-y-3"><div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg"><span>✓ Asistencias</span><span class="font-bold text-blue-600">' + stats.attendance + '</span></div><div class="flex items-center justify-between p-3 bg-green-50 rounded-lg"><span>⭐ Participaciones</span><span class="font-bold text-green-600">' + stats.participation + '</span></div></div>';
+}
+
+function closeModal(event) { if (!event || event.target === event.currentTarget) document.getElementById('modals').innerHTML = ''; }
+
+showLoginScreen();
