@@ -5,8 +5,7 @@ var firebaseConfig = {
   projectId: "calendario-jco",
   storageBucket: "calendario-jco.firebasestorage.app",
   messagingSenderId: "6311216056",
-  appId: "1:6311216056:web:9096c7d69a9125527d454d"
-};
+  appId: "1:6311216056:web:9096c7d69a9125527d454d"};
 
 firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
@@ -47,8 +46,89 @@ function loadData() {
     db.ref('participation').on('value', function(s) { participation = s.val() || {}; if (currentUser) showCalendar(); });
 }
 
+function getUpcomingEvents() {
+    var today = formatDate(new Date());
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var tomorrowStr = formatDate(tomorrow);
+    
+    var weekEnd = new Date();
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    var weekEndStr = formatDate(weekEnd);
+    
+    var eventsToday = [];
+    var eventsTomorrow = [];
+    var eventsThisWeek = [];
+    
+    for (var id in events) {
+        var ev = events[id];
+        if (ev.date === today) eventsToday.push(ev);
+        else if (ev.date === tomorrowStr) eventsTomorrow.push(ev);
+        else if (ev.date > today && ev.date <= weekEndStr) eventsThisWeek.push(ev);
+    }
+    
+    return {today: eventsToday, tomorrow: eventsTomorrow, week: eventsThisWeek};
+}
+
+function showReminderBanner() {
+    var upcoming = getUpcomingEvents();
+    var banners = '';
+    
+    if (upcoming.today.length > 0) {
+        banners += '<div class="bg-gradient-to-r from-red-900 to-red-700 border-2 border-red-500 rounded-lg p-4 mb-4 glow-gold"><div class="flex items-center gap-3"><span class="text-3xl">🔥</span><div class="flex-1"><div class="font-bold text-white text-lg">¡EVENTOS HOY!</div><div class="text-red-200 text-sm">Tienes ' + upcoming.today.length + ' evento(s) programado(s) para hoy</div></div><button onclick="showTodayEvents()" class="btn-gold px-4 py-2 rounded-lg text-sm">VER</button></div></div>';
+    }
+    
+    if (upcoming.tomorrow.length > 0) {
+        banners += '<div class="bg-gradient-to-r from-orange-900 to-orange-700 border-2 border-orange-500 rounded-lg p-4 mb-4"><div class="flex items-center gap-3"><span class="text-3xl">⚡</span><div class="flex-1"><div class="font-bold text-white text-lg">Eventos Mañana</div><div class="text-orange-200 text-sm">Tienes ' + upcoming.tomorrow.length + ' evento(s) programado(s) para mañana</div></div><button onclick="showTomorrowEvents()" class="btn-gold px-4 py-2 rounded-lg text-sm">VER</button></div></div>';
+    }
+    
+    if (upcoming.week.length > 0) {
+        banners += '<div class="bg-gradient-to-r from-blue-900 to-blue-700 border-2 border-blue-500 rounded-lg p-4 mb-4"><div class="flex items-center gap-3"><span class="text-3xl">📅</span><div class="flex-1"><div class="font-bold text-white text-lg">Próximos 7 Días</div><div class="text-blue-200 text-sm">Tienes ' + upcoming.week.length + ' evento(s) esta semana</div></div><button onclick="showWeekEvents()" class="btn-gold px-4 py-2 rounded-lg text-sm">VER</button></div></div>';
+    }
+    
+    if (!banners) {
+        banners = '<div class="bg-gradient-to-r from-green-900 to-green-700 border-2 border-green-500 rounded-lg p-4 mb-4"><div class="flex items-center gap-3"><span class="text-3xl">✅</span><div class="flex-1"><div class="font-bold text-white text-lg">Todo Tranquilo</div><div class="text-green-200 text-sm">No tienes eventos próximos en los siguientes 7 días</div></div></div></div>';
+    }
+    
+    return banners;
+}
+
+function showTodayEvents() {
+    var upcoming = getUpcomingEvents();
+    showEventsList(upcoming.today, 'Eventos de HOY');
+}
+
+function showTomorrowEvents() {
+    var upcoming = getUpcomingEvents();
+    showEventsList(upcoming.tomorrow, 'Eventos de MAÑANA');
+}
+
+function showWeekEvents() {
+    var upcoming = getUpcomingEvents();
+    showEventsList(upcoming.week, 'Eventos de esta SEMANA');
+}
+
+function showEventsList(eventsList, title) {
+    var html = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-2xl w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-gold glow-gold-strong">' + title + '</h3><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-3">';
+    
+    if (eventsList.length === 0) {
+        html += '<p class="text-gray-400 text-center py-8">No hay eventos</p>';
+    } else {
+        for (var i = 0; i < eventsList.length; i++) {
+            var ev = eventsList[i];
+            html += '<div class="p-4 bg-gray-900 rounded-lg border-l-4 ' + getBorderColor(ev.type) + '"><div class="font-bold text-white text-lg">' + ev.title + '</div><div class="text-gray-400 text-sm mt-1">📅 ' + formatDateReadable(ev.date) + '</div><div class="text-gray-400 text-sm">⏰ ' + (ev.time || 'Sin hora especificada') + '</div>';
+            if (ev.cost) html += '<div class="text-gray-400 text-sm">💰 $' + ev.cost + '</div>';
+            if (ev.description) html += '<div class="text-gray-300 text-sm mt-2">' + ev.description + '</div>';
+            html += '</div>';
+        }
+    }
+    
+    html += '</div></div></div>';
+    document.getElementById('modals').innerHTML = html;
+}
+
 function showLoginScreen() {
-    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-dark-card border-glow rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><img src="https://i.ibb.co/xqgGTxgh/JCO-dorado-transparente-300x300-045456.png" alt="Logo" class="w-32 h-32 mx-auto mb-4 rounded-full glow-gold"><h1 class="text-4xl font-bold text-gold glow-gold-strong retro-title mb-2">CALENDARIO</h1><p class="text-gray-300">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gradient-to-r from-yellow-500 to-yellow-600 text-black">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-700 text-gray-300">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="login()" class="w-full btn-gold py-3 rounded-lg transition">ENTRAR</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="register()" class="w-full btn-gold py-3 rounded-lg transition">CREAR CUENTA</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
+    document.getElementById('app').innerHTML = '<div class="min-h-screen flex items-center justify-center p-4"><div class="bg-dark-card border-glow rounded-2xl shadow-2xl p-8 max-w-md w-full"><div class="text-center mb-8"><div class="w-32 h-32 mx-auto mb-4 rounded-full glow-gold bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center"><span class="text-6xl">📅</span></div><h1 class="text-4xl font-bold text-gold glow-gold-strong retro-title mb-2">CALENDARIO</h1><p class="text-gray-300">Gestión de clases y asistencias</p></div><div class="flex gap-2 mb-6"><button onclick="showTab(\'login\')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gradient-to-r from-yellow-500 to-yellow-600 text-black">Iniciar Sesión</button><button onclick="showTab(\'register\')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg font-semibold bg-gray-700 text-gray-300">Registrarse</button></div><div id="loginForm"><div class="space-y-4"><input type="email" id="loginEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="loginPassword" placeholder="Contraseña" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="login()" class="w-full btn-gold py-3 rounded-lg transition">ENTRAR</button></div></div><div id="registerForm" class="hidden"><div class="space-y-4"><input type="text" id="registerName" placeholder="Nombre completo" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="email" id="registerEmail" placeholder="Email" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><input type="password" id="registerPassword" placeholder="Contraseña (mínimo 6 caracteres)" class="w-full px-4 py-3 bg-gray-900 border-2 border-yellow-600 rounded-lg text-white focus:border-yellow-400 focus:outline-none placeholder-gray-500"><button onclick="register()" class="w-full btn-gold py-3 rounded-lg transition">CREAR CUENTA</button></div></div><div id="authMessage" class="mt-4 text-center text-sm"></div></div></div>';
 }
 
 function showTab(tab) {
@@ -136,6 +216,8 @@ function showCalendar() {
         stuHTML += '<div class="p-3 bg-gray-900 border border-gray-700 rounded-lg hover:border-yellow-600 transition"><div class="font-semibold text-white">' + students[uid].name + '</div><div class="text-xs text-gray-400 mt-1 flex gap-3"><span>✓ ' + stats.attendance + '</span><span>⭐ ' + stats.participation + '</span></div></div>';
     }
     
+    var reminderHTML = showReminderBanner();
+    
     var userManagementHTML = '';
     if (isAdmin) {
         var adminCount = 0, studentCount = 0;
@@ -146,7 +228,9 @@ function showCalendar() {
         userManagementHTML = '<div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6 mb-6"><h3 class="text-2xl font-bold text-gold glow-gold-strong mb-4 flex items-center gap-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>GESTIÓN DE USUARIOS</h3><div class="grid grid-cols-2 gap-4 mb-4"><div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 p-4 rounded-lg text-center glow-gold"><div class="text-3xl font-bold text-gold">' + adminCount + '</div><div class="text-sm text-gray-300">Administradores</div></div><div class="bg-green-900 bg-opacity-30 border border-green-600 p-4 rounded-lg text-center"><div class="text-3xl font-bold text-green-400">' + studentCount + '</div><div class="text-sm text-gray-300">Alumnos</div></div></div><button onclick="showUserManagementModal()" class="w-full btn-gold py-3 rounded-lg transition">VER TODOS LOS USUARIOS</button></div>';
     }
     
-    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div class="flex items-center gap-4"><img src="https://i.ibb.co/xqgGTxgh/JCO-dorado-transparente-300x300-045456.png" alt="Logo" class="w-16 h-16 rounded-full glow-gold"><div><h1 class="text-3xl font-bold text-gold glow-gold-strong retro-title">CALENDARIO</h1><p class="text-gray-300 mt-1"><span class="font-semibold text-white">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-yellow-600 text-black' : 'bg-green-600 text-black') + ' px-3 py-1 rounded-full font-bold">' + (isAdmin ? 'ADMIN' : 'ALUMNO') + '</span></p></div></div><button onclick="logout()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg transition">Salir</button></div></div>';
+    var html = '<div class="max-w-7xl mx-auto p-4"><div class="bg-dark-card border-glow rounded-xl shadow-2xl p-6 mb-6"><div class="flex justify-between items-center flex-wrap gap-4"><div class="flex items-center gap-4"><div class="w-16 h-16 rounded-full glow-gold bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center"><span class="text-3xl">📅</span></div><div><h1 class="text-3xl font-bold text-gold glow-gold-strong retro-title">CALENDARIO</h1><p class="text-gray-300 mt-1"><span class="font-semibold text-white">' + currentUser.name + '</span><span class="ml-2 text-sm ' + (isAdmin ? 'bg-yellow-600 text-black' : 'bg-green-600 text-black') + ' px-3 py-1 rounded-full font-bold">' + (isAdmin ? 'ADMIN' : 'ALUMNO') + '</span></p></div></div><button onclick="logout()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg transition">Salir</button></div></div>';
+    
+    html += reminderHTML;
     
     if (isAdmin) html += userManagementHTML;
     
@@ -235,55 +319,47 @@ function selectDate(dateStr) {
 }
 
 function showAddEventModal(dateStr) {
-    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gold glow-gold-strong">AGREGAR EVENTO</h3><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><select id="eventType" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option></select><input type="time" id="eventTime" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"></textarea><button onclick="addEvent(\'' + dateStr + '\')" class="w-full btn-gold py-2 rounded-lg font-bold">GUARDAR</button></div></div></div>';
+    document.getElementById('modals').innerHTML = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gold glow-gold-strong">AGREGAR EVENTO</h3><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-4"><input type="text" id="eventTitle" placeholder="Título" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><select id="eventType" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><option value="clase">Clase</option><option value="reunion">Reunión</option><option value="examen">Examen</option><option value="evento">Evento</option</select><input type="time" id="eventTime" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none"><input type="number" id="eventCost" placeholder="Costo" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"><textarea id="eventDescription" placeholder="Descripción" rows="3" class="w-full px-4 py-2 bg-gray-900 border-2 border-yellow-600 text-white rounded-lg focus:outline-none placeholder-gray-500"></textarea><button onclick="addEvent(\'' + dateStr + '\')" class="w-full btn-gold py-2 rounded-lg font-bold">GUARDAR</button></div></div></div>';
 }
 
 function addEvent(dateStr) {
-    var title = document.getElementById('eventTitle').value;
-    if (!title) { alert('Ingresa un título'); return; }
-    var eventId = Date.now().toString();
-    db.ref('events/' + eventId).set({id: eventId, title: title, type: document.getElementById('eventType').value, time: document.getElementById('eventTime').value, cost: document.getElementById('eventCost').value, description: document.getElementById('eventDescription').value, date: dateStr, createdBy: currentUser.uid, createdAt: Date.now()});
-    closeModal();
-    selectDate(dateStr);
+var title = document.getElementById('eventTitle').value;
+if (!title) { alert('Ingresa un título'); return; }
+var eventId = Date.now().toString();
+db.ref('events/' + eventId).set({id: eventId, title: title, type: document.getElementById('eventType').value, time: document.getElementById('eventTime').value, cost: document.getElementById('eventCost').value, description: document.getElementById('eventDescription').value, date: dateStr, createdBy: currentUser.uid, createdAt: Date.now()});
+closeModal();
+selectDate(dateStr);
 }
-
 function deleteEvent(eventId) { if (confirm('¿Eliminar?')) db.ref('events/' + eventId).remove(); }
-
 function showAttendanceModal(eventId) {
-    var ev = events[eventId];
-    var html = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><div><h3 class="text-xl font-bold text-gold glow-gold-strong">PASAR LISTA</h3><p class="text-sm text-gray-400">' + ev.title + '</p></div><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-2">';
-    for (var uid in students) {
-        var stu = students[uid];
-        var attKey = eventId + '-' + uid;
-        var isPresent = attendance[attKey] || false;
-        html += '<div class="flex justify-between items-center p-3 bg-gray-900 border border-gray-700 rounded-lg"><span class="font-medium text-white">' + stu.name + '</span><div class="flex gap-2"><button onclick="toggleAttendance(\'' + eventId + '\',\'' + uid + '\')" class="px-4 py-1 rounded font-bold ' + (isPresent ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400') + '">' + (isPresent ? '✓ Presente' : 'Ausente') + '</button><button onclick="addParticipation(\'' + uid + '\')" class="px-3 py-1 bg-yellow-600 text-black rounded font-bold">+1 ⭐</button></div></div>';
-    }
-    html += '</div></div></div>';
-    document.getElementById('modals').innerHTML = html;
+var ev = events[eventId];
+var html = '<div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50" onclick="closeModal(event)"><div class="bg-dark-card border-glow rounded-xl p-6 max-w-md w-full max-h-96 overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><div><h3 class="text-xl font-bold text-gold glow-gold-strong">PASAR LISTA</h3><p class="text-sm text-gray-400">' + ev.title + '</p></div><button onclick="closeModal()" class="text-gold hover:text-yellow-400 text-3xl">×</button></div><div class="space-y-2">';
+for (var uid in students) {
+var stu = students[uid];
+var attKey = eventId + '-' + uid;
+var isPresent = attendance[attKey] || false;
+html += '<div class="flex justify-between items-center p-3 bg-gray-900 border border-gray-700 rounded-lg"><span class="font-medium text-white">' + stu.name + '</span><div class="flex gap-2"><button onclick="toggleAttendance(\'' + eventId + '\',\'' + uid + '\')" class="px-4 py-1 rounded font-bold ' + (isPresent ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400') + '">' + (isPresent ? '✓ Presente' : 'Ausente') + '</button><button onclick="addParticipation(\'' + uid + '\')" class="px-3 py-1 bg-yellow-600 text-black rounded font-bold">+1 ⭐</button></div></div>';
 }
-
+html += '</div></div></div>';
+document.getElementById('modals').innerHTML = html;
+}
 function toggleAttendance(eventId, studentId) {
-    var key = eventId + '-' + studentId;
-    db.ref('attendance/' + key).set(!(attendance[key] || false));
+var key = eventId + '-' + studentId;
+db.ref('attendance/' + key).set(!(attendance[key] || false));
 }
-
 function addParticipation(studentId) {
-    var pid = Date.now().toString();
-    db.ref('participation/' + pid).set({studentId: studentId, points: 1, date: formatDate(new Date()), timestamp: Date.now()});
+var pid = Date.now().toString();
+db.ref('participation/' + pid).set({studentId: studentId, points: 1, date: formatDate(new Date()), timestamp: Date.now()});
 }
-
 function getStudentStats(studentId) {
-    var attCnt = 0, partPts = 0;
-    for (var key in attendance) if (key.indexOf(studentId) !== -1 && attendance[key]) attCnt++;
-    for (var id in participation) if (participation[id].studentId === studentId) partPts += participation[id].points || 0;
-    return {attendance: attCnt, participation: partPts};
+var attCnt = 0, partPts = 0;
+for (var key in attendance) if (key.indexOf(studentId) !== -1 && attendance[key]) attCnt++;
+for (var id in participation) if (participation[id].studentId === studentId) partPts += participation[id].points || 0;
+return {attendance: attCnt, participation: partPts};
 }
-
 function getMyStatsHTML() {
-    var stats = getStudentStats(currentUser.uid);
-    return '<div class="space-y-3"><div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg"><span class="text-gray-300">✓ Asistencias</span><span class="font-bold text-blue-400 text-2xl">' + stats.attendance + '</span></div><div class="flex items-center justify-between p-3 bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg glow-gold"><span class="text-gray-300">⭐ Participaciones</span><span class="font-bold text-gold text-2xl">' + stats.participation + '</span></div></div>';
+var stats = getStudentStats(currentUser.uid);
+return '<div class="space-y-3"><div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg"><span class="text-gray-300">✓ Asistencias</span><span class="font-bold text-blue-400 text-2xl">' + stats.attendance + '</span></div><div class="flex items-center justify-between p-3 bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg glow-gold"><span class="text-gray-300">⭐ Participaciones</span><span class="font-bold text-gold text-2xl">' + stats.participation + '</span></div></div>';
 }
-
 function closeModal(event) { if (!event || event.target === event.currentTarget) document.getElementById('modals').innerHTML = ''; }
-
 showLoginScreen();
