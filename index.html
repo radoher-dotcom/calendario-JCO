@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Calendario y Asistencias</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Calendario">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/D4AF37/000000?text=CP">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-database-compat.min.js"></script>
@@ -57,5 +64,12 @@
 <body>
     <div id="app"></div>
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service Worker registrado', reg))
+                .catch(err => console.log('Error al registrar Service Worker', err));
+        }
+    </script>
 </body>
 </html>
