@@ -1,0 +1,24 @@
+{
+  "name": "Sistema de Calendario - PejePoints",
+  "short_name": "Calendario",
+  "description": "Sistema de gestión de clases y asistencias con PejePoints",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/D4AF37/000000?text=CP",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/D4AF37/000000?text=CP",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
