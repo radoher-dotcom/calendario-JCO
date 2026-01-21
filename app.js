@@ -1,3 +1,5 @@
+
+
 var firebaseConfig = {
    apiKey: "AIzaSyAps7t_AkEpd9hFBihJ-Kw5MlHcjN4DOFc",
   authDomain: "calendario-jco.firebaseapp.com",
@@ -721,12 +723,17 @@ html += '</div></div></div>';
 document.getElementById('modals').innerHTML = html;
 }
 function toggleAttendance(eventId, studentId) {
-var key = eventId + '-' + studentId;
-var wasPresent = attendance[key] || false;
-db.ref('attendance/' + key).set(!wasPresent);
-if (!wasPresent) {
-    updatePejePoints(studentId, 5, 'Asistencia a clase', 'add');
-}
+    var key = eventId + '-' + studentId;
+    var wasPresent = attendance[key] || false;
+    db.ref('attendance/' + key).set(!wasPresent);
+    
+    if (!wasPresent) {
+        updatePejePoints(studentId, 5, 'Asistencia a clase', 'add');
+    }
+    
+    setTimeout(function() {
+        showAttendanceModal(eventId);
+    }, 300);
 }
 function getStudentStats(studentId) {
 var attCnt = 0;
